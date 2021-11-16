@@ -1,9 +1,9 @@
 package github.ski.drain
 
 import github.ski.drain.domain.rule.{NoMatch, RuleEngine, UserRule, UserRuleNamedValueMatch, UserRuleValueMatch}
-import github.ski.drain.domain.template.Template
+import github.ski.drain.domain.template.{Template, VString, Variable}
 import github.ski.drain.state.{DrainConfig, DrainState, DrainStateController}
-import github.ski.drain.token.{FreeToken, NamedValueToken, StructuredLogToken, Token, Tokenizer, ValueToken}
+import github.ski.drain.token.{EnclosedToken, FreeToken, NamedValueToken, StructuredLogToken, Token, Tokenizer, ValueToken, VariableToken}
 import github.ski.drain.util.CommonRules
 
 import java.util.UUID
@@ -49,5 +49,37 @@ class Drain(tokenizer: Tokenizer, initialDrainState: DrainState = DrainState(), 
    */
   def process(content: List[StructuredLogToken]): (Template, List[StructuredLogToken]) = {
     drainStateController.upsert(content)
+  }
+
+  /**
+   * Finish building the variables
+   * @param template
+   * @param structuredLog
+   * @return
+   */
+  def postProcess(template: Template, structuredLog: List[StructuredLogToken]): List[Variable] = {
+    structuredLog.zip(template.tokens).collect {
+      case (EnclosedToken(s), VariableToken(id)) =>
+        Variable(id, s"enclosed${id.toString.substring(0, 8)}", VString, s)
+      case (ValueToken(s), VariableToken(id)) => {
+        val varType = Variable.determineType(s)
+        Variable(id, s"${varType.toName()}${id.toString.substring(0, 8)}", varType, s)
+      }
+      //TODO: Handle separator persistence
+      case (NamedValueToken(name, separator, value), VariableToken(id)) => {
+        val varType = Variable.determineType(value)
+        Variable(id, name, varType, value)
+      }
+    }
+  }
+
+  /**
+   * Log rebuild from template and variables
+   */
+  def rehydrate(template: Template, variables: List[Variable]): String = {
+    variables.foldLeft(template.print()) {
+      case (s, v) =>
+        s.replace(s"<${v.id}>", v.value)
+    }
   }
 }

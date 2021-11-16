@@ -1,20 +1,29 @@
 package github.ski.drain.state
 
 import github.ski.drain.domain.template.Template
-import github.ski.drain.token.{StructuredLogToken, Token}
+import github.ski.drain.token.{ComparableToken, StructuredLogToken, TemplateToken, Token}
 
 import java.util.UUID
 
 class DrainStateController(drainState: DrainState, config: DrainConfig) {
 
-  def createTemplate(candidate: List[StructuredLogToken]): Template = {
+  def getState(): DrainState = drainState
+
+  def createTemplateFromStructured(candidate: List[StructuredLogToken]): Template = {
     Template(UUID.randomUUID(), candidate.map(Token.toTemplate))
+  }
+
+  def insertTemplate(template: Template): Unit = {
+    val treeBySize = drainState.lengthMap.getOrElseUpdate(template.tokens.size, PrefixTreeInternal())
+    val comparableTokens = template.tokens.map(Token.toComparable)
+    val leaf = findOrCreateLeaf(comparableTokens, treeBySize)
+    leaf.templates += ((template.id, template))
   }
 
   def upsert(candidate: List[StructuredLogToken]): (Template, List[StructuredLogToken]) = {
     val treeBySize = drainState.lengthMap.getOrElseUpdate(candidate.size, PrefixTreeInternal())
-    val leaf = findOrCreateLeaf(candidate, treeBySize)
-    val candidateTemplate = createTemplate(candidate)
+    val leaf = findOrCreateLeaf(candidate.map(Token.toComparable), treeBySize)
+    val candidateTemplate = createTemplateFromStructured(candidate)
     val scoredTemplates = leaf.templates.values.map {
       case t => (t, t.similarity(candidateTemplate))
     }
@@ -26,19 +35,19 @@ class DrainStateController(drainState: DrainState, config: DrainConfig) {
       .map(_._1)
 
     val newTemplate = fitTemplates.headOption
-      .map(_.maskBy(candidateTemplate))
+      .map(_.maskBy(candidate))
       .getOrElse(candidateTemplate)
 
     leaf.templates += ((newTemplate.id, newTemplate))
     (newTemplate, newTemplate.mask(candidate))
   }
 
-  private def findOrCreateLeafHelper(candidate: List[StructuredLogToken], prefixTree: PrefixTree, depth: Int): PrefixTreeLeaf = {
+  private def findOrCreateLeafHelper(candidate: List[ComparableToken], prefixTree: PrefixTree, depth: Int): PrefixTreeLeaf = {
     prefixTree match {
       case _:PrefixTreeLeaf if (depth < config.maxDepth) =>
         throw new Exception("Leaf encountered before fixed depth")
       case PrefixTreeInternal(m) =>
-        val currentToken = Token.toTemplate(candidate(depth))
+        val currentToken = candidate(depth)
         val foundNext = m.getOrElseUpdate(currentToken.print(), {
           if (depth == config.maxDepth || depth == candidate.length-1) {
             PrefixTreeLeaf()
@@ -62,7 +71,7 @@ class DrainStateController(drainState: DrainState, config: DrainConfig) {
    * @param depth
    * @return
    */
-  private def findOrCreateLeaf(candidate: List[StructuredLogToken], prefixTree: PrefixTree): PrefixTreeLeaf = {
+  private def findOrCreateLeaf(candidate: List[ComparableToken], prefixTree: PrefixTree): PrefixTreeLeaf = {
     findOrCreateLeafHelper(candidate, prefixTree, 0)
   }
 }

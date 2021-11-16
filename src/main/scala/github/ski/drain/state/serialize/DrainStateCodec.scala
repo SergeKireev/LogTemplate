@@ -3,7 +3,7 @@ package github.ski.drain.state.serialize
 import github.ski.drain.domain.template.Template
 import github.ski.drain.state.{DrainConfig, DrainState, PrefixTree, PrefixTreeInternal, PrefixTreeLeaf}
 import github.ski.drain.token.TemplateToken
-import io.circe.{Codec, Decoder, Encoder, HCursor, Json, JsonObject}
+import io.circe.{Codec, Decoder, DecodingFailure, Encoder, HCursor, Json, JsonObject}
 import io.circe.generic.semiauto.{deriveCodec, deriveEncoder}
 import io.circe.syntax._
 
@@ -12,25 +12,23 @@ import scala.collection.mutable
 
 object DrainStateCodec {
 
-  implicit lazy val templateTokenEnc: Codec[TemplateToken] = deriveCodec[TemplateToken]
-  implicit lazy val templateEnc: Codec[Template] = deriveCodec[Template]
-  implicit lazy val prefixTreeLeafEnc: Encoder[PrefixTreeLeaf] = deriveEncoder[PrefixTreeLeaf]
+  implicit lazy val templateTokenCodec: Codec[TemplateToken] = deriveCodec[TemplateToken]
+  implicit lazy val templateCodec: Codec[Template] = deriveCodec[Template]
+  implicit lazy val prefixTreeLeafCodec: Codec[PrefixTreeLeaf] = deriveCodec[PrefixTreeLeaf]
 
   implicit lazy val prefixTreeEnc: Encoder[PrefixTree] = Encoder.instance[PrefixTree] {
     case PrefixTreeInternal(children) =>
       val obj = JsonObject.empty
       obj.add("children", Json.fromFields(children.map {
         case (field, value: PrefixTreeInternal) => (field, prefixTreeEnc(value))
-        case (field, value: PrefixTreeLeaf) => (field, prefixTreeLeafEnc(value))
+        case (field, value: PrefixTreeLeaf) => (field, prefixTreeLeafCodec(value))
       }.toMap)).asJson
-    case p: PrefixTreeLeaf => prefixTreeLeafEnc(p)
+    case p: PrefixTreeLeaf => prefixTreeLeafCodec(p)
   }
 
   implicit val prefixTreeDec: Decoder[PrefixTree] = Decoder.instance[PrefixTree] {
     case obj: HCursor => {
-      val leaf = obj.downField("templates").as[Map[UUID, Template]].map {
-        case templates => PrefixTreeLeaf(mutable.Map.from(templates))
-      }
+      val leaf = obj.downField("templates").as[mutable.Map[UUID, Template]]
       if (leaf.isLeft) {
         val childrenCursor = obj.downField("children")
         val keys = childrenCursor.keys.get
@@ -39,10 +37,10 @@ object DrainStateCodec {
             childrenCursor.downField(k).as[PrefixTree](prefixTreeDec).toOption.map(x => (k, x))
         }
         Right(PrefixTreeInternal(children = mutable.Map.from(children)))
-      } else leaf
+      } else leaf.map(PrefixTreeLeaf)
     }
   }
 
-  implicit lazy val drainConfigEncoder: Codec[DrainConfig] = deriveCodec[DrainConfig]
-  implicit lazy val drainStateEncoder: Codec[DrainState] = deriveCodec[DrainState]
+  implicit lazy val drainConfigCodec: Codec[DrainConfig] = deriveCodec[DrainConfig]
+  implicit lazy val drainStateCodec: Codec[DrainState] = deriveCodec[DrainState]
 }

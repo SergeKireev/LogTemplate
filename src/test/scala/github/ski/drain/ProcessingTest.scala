@@ -1,13 +1,8 @@
 package github.ski.drain
 
-import github.ski.drain.domain.template.Template
-import github.ski.drain.state.{DrainState, PrefixTreeLeaf}
 import github.ski.drain.token.{BracketAwareTokenizer, FreeToken, ValueToken}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-
-import java.util.UUID
-import scala.collection.mutable
 
 class ProcessingTest extends AnyFunSuite with Matchers {
   test("test 3 successive templatizations") {
@@ -36,12 +31,5 @@ class ProcessingTest extends AnyFunSuite with Matchers {
     processed3 should contain theSameElementsInOrderAs
       List(FreeToken("User"), ValueToken("123"), FreeToken("has"), ValueToken("reconnected"),
         FreeToken("and"), ValueToken("unseen"))
-
-    val prefixTreeLeaf = PrefixTreeLeaf(mutable.Map(UUID.randomUUID() -> Template.apply(UUID.randomUUID(), Nil)))
-    val drainState = drain.drainState
-    val serialized = DrainState.serialize(drainState)
-    println(serialized)
-    val deserialized = DrainState.deserialize(serialized)
-    println(deserialized)
   }
 }
