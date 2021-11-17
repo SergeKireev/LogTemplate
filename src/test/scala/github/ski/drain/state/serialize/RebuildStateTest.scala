@@ -14,7 +14,6 @@ class RebuildStateTest extends AnyFunSuite with Matchers {
     new UUID(random.nextLong(), random.nextLong())
   }
 
-
   test("rebuild with a list of templates") {
     val drainState = DrainState()
     val drainStateController = new DrainStateController(drainState, DrainConfig())

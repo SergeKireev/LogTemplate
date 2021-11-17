@@ -31,9 +31,13 @@ case class NamedValueRegexUserRule(regex: Regex, nameGroup: Int, valueGroup: Int
       case m: Match =>
         val name = m.subgroups(nameGroup)
         val value = m.subgroups(valueGroup)
-        (NoMatch(s.substring(0, m.start(nameGroup))) ::
-          UserRuleNamedValueMatch(name, s.substring(m.end(nameGroup), m.start(valueGroup)), value) ::
-          NoMatch(s.substring(m.end(valueGroup))) :: Nil)
+        val startName = m.start(nameGroup+1)
+        val endName = m.end(nameGroup+1)
+        val startValue = m.start(valueGroup+1)
+        val endValue = m.end(valueGroup+1)
+        (NoMatch(s.substring(0, startName)) ::
+          UserRuleNamedValueMatch(name, s.substring(endName, startValue), value) ::
+          NoMatch(s.substring(endValue)) :: Nil)
     }
     val nonEmpty = subMatches.filter {
       case NoMatch(s) => s.nonEmpty

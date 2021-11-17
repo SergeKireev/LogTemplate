@@ -29,7 +29,8 @@ class BracketAwareTokenizer(separators: String = DEFAULT_SEPARATORS) extends Tok
 
       case c => buffer.append(c)
     }
-    strings += FreeToken(buffer.toString)
+    if (buffer.toString.nonEmpty)
+      strings += FreeToken(buffer.toString)
     strings.toList
   }
 

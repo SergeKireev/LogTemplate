@@ -16,3 +16,17 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
 
+val elastic4sVersion = "7.15.1"
+libraryDependencies ++= Seq(
+  // recommended client for beginners
+  "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
+  // test kit
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
+)
+
+libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.32",
+  "org.slf4j" % "slf4j-simple" % "1.7.32")
+
+
+libraryDependencies += "com.crobox.clickhouse" %% "client" % "1.0.0"
+
