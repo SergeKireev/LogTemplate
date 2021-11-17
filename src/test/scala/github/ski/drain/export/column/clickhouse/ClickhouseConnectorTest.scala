@@ -23,23 +23,11 @@ class ClickhouseConnectorTest extends AnyFunSuite with ScalaFutures {
   ignore("export variables to clickhouse") {
     val config =
       ConfigFactory.parseString("""
-        |crobox.clickhouse.client {
-        |    connection: {
-        |        type = "single-host",
-        |        host = "172.17.0.2",
-        |        port = 8123
-        |    },
-        |    maximum-frame-length: 100000,
-        |    retries: 2,
-        |    custom: {},
-        |    settings: {
-        |      custom: {}
-        |    },
-        |    buffer-size: 8192
+        |clickhouse {
+        |  host = "172.17.0.2"
         |}
         |""".stripMargin)
-    val clickhouseClient = new ClickhouseClient(Some(config))
-    val clickhouseConnector = new ClickhouseConnector(clickhouseClient)
+    val clickhouseConnector = new ClickhouseConnector(new ClickhouseConfig(config))
     val result = clickhouseConnector.init().futureValue
     val random = new Random(0L)
     val template1 = Template(id = uuidGen(random), tokens = List(FreeToken("User"), VariableToken(uuidGen(random)), FreeToken("has"), VariableToken(uuidGen(random))))

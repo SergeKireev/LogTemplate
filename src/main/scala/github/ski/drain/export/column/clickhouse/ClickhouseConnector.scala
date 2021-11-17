@@ -49,9 +49,12 @@ object codec {
 }
 
 import codec._
-class ClickhouseConnector(client: ClickhouseClient) extends ColumnConnector[Future] {
+class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[Future] {
 
-  implicit val system:ActorSystem = ActorSystem("clickhouse-client")
+  lazy val client = {
+    val croboxConfig = config.adaptToCrobox()
+    new ClickhouseClient(Some(croboxConfig))
+  }
 
   val DB_NAME = "template"
   val TABLE_NAME = "variables"

@@ -8,7 +8,7 @@ class PreprocessingTest extends AnyFunSuite with Matchers {
   test("test preprocessing of a value entry") {
     val content = "User [123][456] has connected"
     val tokenizer = new BracketAwareTokenizer()
-    val drain = new Drain(tokenizer)
+    val drain = new Drain()
     val expected = List(FreeToken("User"),
       FreeToken("["),
       ValueToken("123"),
@@ -23,8 +23,7 @@ class PreprocessingTest extends AnyFunSuite with Matchers {
 
   test("test preprocessing of a json entry") {
     val content = """User {"user":"xxx", "error": "error"} is problematic"""
-    val tokenizer = new BracketAwareTokenizer()
-    val drain = new Drain(tokenizer)
+    val drain = new Drain()
     val expected = List(FreeToken("User"),
         EnclosedToken("""{"user":"xxx", "error": "error"}"""),
         FreeToken("is"),

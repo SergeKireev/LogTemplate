@@ -2,6 +2,7 @@ package github.ski.drain.`export`.index.elasticsearch
 
 import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties}
+import com.typesafe.config.ConfigFactory
 import github.ski.drain.domain.template.Template
 import github.ski.drain.token.{FreeToken, VariableToken}
 import org.scalatest.concurrent.ScalaFutures
@@ -19,11 +20,13 @@ class ElasticExportTest extends AnyFunSuite with ScalaFutures {
   override implicit val patienceConfig = PatienceConfig(scaled(Span(2000, Millis)))
 
   ignore("insert a template in elasticsearch") {
-    val props = ElasticProperties("http://172.17.0.2:9200")
-    val client = ElasticClient(JavaClient(props))
-
-    val elasticSearchConnector = new ElasticSearchConnector(client)
-
+    val config = ConfigFactory.parseString(
+      """
+        |elastic {
+        |   host = "172.17.0.2"
+        |}
+        |""".stripMargin)
+    val elasticSearchConnector = new ElasticSearchConnector(new ElasticSearchConfig(config))
     val random = new Random(0L)
     val template1 = Template(id = uuidGen(random), tokens = List(FreeToken("User"), VariableToken(uuidGen(random)), FreeToken("has"), VariableToken(uuidGen(random))))
     elasticSearchConnector.init().futureValue

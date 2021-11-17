@@ -9,8 +9,7 @@ class ProcessingTest extends AnyFunSuite with Matchers {
     val log1 = "User 123 has connected and seen"
     val log2 = "User 123 has disconnected and seen"
     val log3 = "User 123 has reconnected and unseen"
-    val tokenizer = new BracketAwareTokenizer()
-    val drain = new Drain(tokenizer)
+    val drain = new Drain()
     val preprocessed1 = drain.preprocess(log1)
     val (template1, processed1)  = drain.process(preprocessed1)
     val variable1 = template1.tokens(1).asInstanceOf[VariableToken]

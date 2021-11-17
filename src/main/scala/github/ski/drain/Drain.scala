@@ -3,14 +3,19 @@ package github.ski.drain
 import github.ski.drain.domain.rule.{NoMatch, RuleEngine, UserRule, UserRuleNamedValueMatch, UserRuleValueMatch}
 import github.ski.drain.domain.template.{Template, VString, Variable}
 import github.ski.drain.state.{DrainConfig, DrainState, DrainStateController}
-import github.ski.drain.token.{EnclosedToken, FreeToken, NamedValueToken, StructuredLogToken, Token, Tokenizer, ValueToken, VariableToken}
+import github.ski.drain.token.{BracketAwareTokenizer, EnclosedToken, FreeToken, NamedValueToken, SimpleTokenizer, StructuredLogToken, Token, Tokenizer, ValueToken, VariableToken}
 import github.ski.drain.util.CommonRules
 
 import java.util.UUID
 
 case class DrainResult(template: String, variables: Map[Int, String])
 
-class Drain(tokenizer: Tokenizer, initialDrainState: DrainState = DrainState(), config: DrainConfig = DrainConfig()) {
+class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = DrainConfig()) {
+
+  def tokenizer = config.tokenizeStrategy match {
+    case "simple" => new SimpleTokenizer(" ")
+    case "bracket-aware" => new BracketAwareTokenizer()
+  }
 
   val drainState = initialDrainState
 

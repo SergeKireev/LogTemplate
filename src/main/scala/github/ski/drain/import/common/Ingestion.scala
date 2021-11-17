@@ -2,11 +2,12 @@ package github.ski.drain.`import`.common
 
 import github.ski.drain.domain.log.LogEntry
 
-class Ingestion {
-  def fromString(s: String): LogEntry = {
-    ???
-  }
-  def fromJson(s: String): LogEntry = {
-    ???
+import scala.util.Try
+
+class Ingestion(config: ReadConfig) {
+  val dissect = new Dissect(config.pattern)
+
+  def tryParseLine(s: String): Try[LogEntry] = {
+    dissect.extractLogEvent(s)
   }
 }

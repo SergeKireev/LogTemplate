@@ -1,10 +1,11 @@
 package github.ski.drain.`export`.index.elasticsearch
 
-import com.sksamuel.elastic4s.{ElasticClient, RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, RequestFailure, RequestSuccess}
 import github.ski.drain.`export`.index.IndexConnector
 import github.ski.drain.domain.template.Template
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.fields.TextField
+import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.common.RefreshPolicy
 import com.sksamuel.elastic4s.requests.searches.SearchResponse
 import com.sksamuel.elastic4s.requests.searches.queries.SimpleStringQuery
@@ -16,7 +17,12 @@ import java.util.UUID
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ElasticSearchConnector(client: ElasticClient) extends IndexConnector[Future] {
+class ElasticSearchConnector(config: ElasticSearchConfig) extends IndexConnector[Future] {
+
+  lazy val client = {
+    val props = ElasticProperties(s"http://${config.getHost()}:9200")
+    ElasticClient(JavaClient(props))
+  }
 
   def init(): Future[Unit] = {
     client.execute {

@@ -61,8 +61,7 @@ class PostProcessingTest extends AnyFunSuite with Matchers {
                |        }
                |    }
                |}""".stripMargin)
-    val tokenizer = new BracketAwareTokenizer()
-    val drain = new Drain(tokenizer, state)
+    val drain = new Drain(state)
     val newLog = "User 678 has connected and seen"
     val preprocessed = drain.preprocess(newLog)
     val (template, structured) = drain.process(preprocessed)

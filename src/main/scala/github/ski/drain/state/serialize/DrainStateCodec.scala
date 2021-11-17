@@ -41,6 +41,5 @@ object DrainStateCodec {
     }
   }
 
-  implicit lazy val drainConfigCodec: Codec[DrainConfig] = deriveCodec[DrainConfig]
   implicit lazy val drainStateCodec: Codec[DrainState] = deriveCodec[DrainState]
 }

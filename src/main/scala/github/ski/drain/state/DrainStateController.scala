@@ -43,6 +43,9 @@ class DrainStateController(drainState: DrainState, config: DrainConfig) {
   }
 
   private def findOrCreateLeafHelper(candidate: List[ComparableToken], prefixTree: PrefixTree, depth: Int): PrefixTreeLeaf = {
+    if (candidate == Nil)
+      throw new Exception("Candidate cannot be empty")
+
     prefixTree match {
       case _:PrefixTreeLeaf if (depth < config.maxDepth) =>
         throw new Exception("Leaf encountered before fixed depth")
