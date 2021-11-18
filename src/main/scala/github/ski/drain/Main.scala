@@ -4,13 +4,13 @@ import cats.effect.IO
 import com.typesafe.config.ConfigFactory
 import github.ski.drain.`export`.column.clickhouse.{ClickhouseConfig, ClickhouseConnector}
 import github.ski.drain.`export`.index.elasticsearch.{ElasticSearchConfig, ElasticSearchConnector}
-import github.ski.drain.`import`.common.{Ingestion, ReadConfig}
+import github.ski.drain.`import`.common.{ReadConfig}
 import github.ski.drain.`import`.file.LogFileReader
 import github.ski.drain.state.DrainConfig
 
 import scala.concurrent.ExecutionContext
 
-object Main {
+object Main extends App {
 
   implicit val cs = IO.contextShift(ExecutionContext.global)
 

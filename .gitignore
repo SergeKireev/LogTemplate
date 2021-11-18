@@ -2,7 +2,8 @@
 target
 .idea
 .bsp
-project
+project/*
+!project/plugins.sbt
 docker/elasticsearch/*
 docker/clickhouse/*
 docker/grafana/*

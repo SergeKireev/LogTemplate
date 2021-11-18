@@ -6,4 +6,5 @@ COPY application.conf /drain-scala/src/main/resources/
 COPY file.log /drain-scala/src/main/resources/
 RUN cd drain-scala
 RUN sbt compile
+WORKDIR /drain-scala
 CMD ["sbt", "run"]
