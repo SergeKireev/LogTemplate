@@ -46,7 +46,12 @@ services:
         hard: 262144
     networks:
       - drain
-
+  drain:
+    build: ./drain
+    volumes:
+      - ./drain/resources:/drain-scala/src/main/resources
+    networks:
+      - drain
 networks:
   drain:
     driver: bridge
