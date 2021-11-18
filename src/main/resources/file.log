@@ -1,7 +1,36 @@
-2020-10-11 My message goes here
-2020-10-12 My message goes her
-2020-10-13 My message goes here
-2020-10-14 My message goes here
-2020-10-15 My message goes hee
-2020-10-16 My message goes here
-2020-10-17 My message goes here
+2021-11-09 17:58:30,693 - [WARN] - from com.mediarithmics.api.common.webservice.lib.netflix.MicsRibbonTransport in main The metrics are already registered. The reason could be that we declare two access control module with different effectsjava.lang.IllegalArgumentException: A metric named mics.http_client.PrivateApiWebService.failedWrites already exists
+	at com.codahale.metrics.MetricRegistry.register(MetricRegistry.java:91)
+	at com.codahale.metrics.MetricRegistry.registerAll(MetricRegistry.java:495)
+	at com.codahale.metrics.MetricRegistry.registerAll(MetricRegistry.java:104)
+	at com.mediarithmics.api.common.webservice.lib.netflix.MicsRibbonTransport.$anonfun$new$1(MicsRibbonTransport.scala:121)
+	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+	at scala.util.Try$.apply(Try.scala:213)
+	at com.mediarithmics.api.common.webservice.lib.netflix.MicsRibbonTransport.<init>(MicsRibbonTransport.scala:121)
+	at com.mediarithmics.api.common.webservice.PrivateApiClientFImpl$$anon$1.transportWithTimeout(PrivateApiClientFImpl.scala:35)
+	at com.mediarithmics.api.common.webservice.PrivateApiClientFImpl$$anon$1.<init>(PrivateApiClientFImpl.scala:22)
+	at com.mediarithmics.api.common.webservice.PrivateApiClientFImpl.<init>(PrivateApiClientFImpl.scala:18)
+	at com.mediarithmics.api.common.webservice.WebServiceModule.webServiceClientF$lzycompute(WebServiceModule.scala:32)
+	at com.mediarithmics.api.common.webservice.WebServiceModule.webServiceClientF(WebServiceModule.scala:32)
+	at com.mediarithmics.api.common.webservice.WebServiceModule.remoteCall$lzycompute(WebServiceModule.scala:40)
+	at com.mediarithmics.api.common.webservice.WebServiceModule.remoteCall(WebServiceModule.scala:40)
+	at inject.DatamartStoreNodeExternalApiModuleImpl.userMappingPrivateApi$lzycompute(DatamartStoreNodeExternalApiModule.scala:88)
+	at inject.DatamartStoreNodeExternalApiModuleImpl.userMappingPrivateApi(DatamartStoreNodeExternalApiModule.scala:87)
+	at com.mediarithmics.datamart.store.component.experimental.apprunner.DatamartStoreExperimentalAppRunnerComponent.cachedUserMappingPrivateApi$lzycompute(DatamartStoreExperimentalAppRunnerComponent.scala:153)
+	at com.mediarithmics.datamart.store.component.experimental.apprunner.DatamartStoreExperimentalAppRunnerComponent.cachedUserMappingPrivateApi(DatamartStoreExperimentalAppRunnerComponent.scala:152)
+	at com.mediarithmics.datamart.store.component.experimental.apprunner.DatamartStoreExperimentalAppRunnerComponent.datamartStoreModule$lzycompute(DatamartStoreExperimentalAppRunnerComponent.scala:309)
+	at com.mediarithmics.datamart.store.component.experimental.apprunner.DatamartStoreExperimentalAppRunnerComponent.datamartStoreModule(DatamartStoreExperimentalAppRunnerComponent.scala:304)
+	at inject.DatamartStoreNodeComponents.datamartStoreModule$lzycompute(DatamartStoreNodeComponents.scala:276)
+	at inject.DatamartStoreNodeComponents.datamartStoreModule(DatamartStoreNodeComponents.scala:256)
+	at inject.DatamartStoreNodeComponents.datamartStoreNodeModule$lzycompute(DatamartStoreNodeComponents.scala:396)
+	at inject.DatamartStoreNodeComponents.datamartStoreNodeModule(DatamartStoreNodeComponents.scala:378)
+	at inject.DatamartStoreNodeComponents.router(DatamartStoreNodeComponents.scala:485)
+	at com.mediarithmics.web.inject.MicsComponents.httpRequestHandler$lzycompute(MicsComponents.scala:30)
+	at com.mediarithmics.web.inject.MicsComponents.httpRequestHandler(MicsComponents.scala:29)
+	at play.api.BuiltInComponents.application(Application.scala:315)
+	at play.api.BuiltInComponents.application$(Application.scala:309)
+	at play.api.BuiltInComponentsFromContext.application$lzycompute(ApplicationLoader.scala:226)
+	at play.api.BuiltInComponentsFromContext.application(ApplicationLoader.scala:226)
+	at com.mediarithmics.web.inject.MicsApplicationLoader.load(MicsApplicationLoader.scala:36)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:53)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:29)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)

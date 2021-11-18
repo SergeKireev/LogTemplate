@@ -19,7 +19,22 @@ CREATE TABLE IF NOT EXISTS template.variables
     string_val_2 Nullable(String),
     string_name_3 Nullable(String),
     string_id_3 Nullable(UUID),
-    string_val_3 Nullable(String)
+    string_val_3 Nullable(String),
+    string_name_4 Nullable(String),
+    string_id_4 Nullable(UUID),
+    string_val_4 Nullable(String),
+    string_name_5 Nullable(String),
+    string_id_5 Nullable(UUID),
+    string_val_5 Nullable(String),
+    string_name_6 Nullable(String),
+    string_id_6 Nullable(UUID),
+    string_val_6 Nullable(String),
+    string_name_7 Nullable(String),
+    string_id_7 Nullable(UUID),
+    string_val_7 Nullable(String),
+    string_name_8 Nullable(String),
+    string_id_8 Nullable(UUID),
+    string_val_8 Nullable(String)
 ) ENGINE = MergeTree()
 ORDER BY (ts, id)
 PRIMARY KEY (ts, id)

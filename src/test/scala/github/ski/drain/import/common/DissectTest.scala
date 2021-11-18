@@ -8,16 +8,15 @@ import scala.util.Success
 
 class DissectTest extends AnyFunSuite with Matchers {
   test("compile dissect pattern") {
-    val pattern = DissectPattern("%{foo} %{bar},%{baz}[%{bag}]")
-    val dissect = new Dissect(pattern)
-    val tokens = dissect.compilePattern()
+    val pattern = DissectPattern("%{foo} %{+foo},%{baz}[%{bag}]")
+    val dissect = new Dissect(pattern, null)
+    val tokens = dissect.compilePattern
     tokens should contain theSameElementsInOrderAs
       List(
         Start,
-        Separator(""),
         ToMatch("foo"),
         Separator(" "),
-        ToMatch("bar"),
+        AddingToMatch("foo"),
         Separator(","),
         ToMatch("baz"),
         Separator("["),
@@ -28,9 +27,9 @@ class DissectTest extends AnyFunSuite with Matchers {
   }
 
   test("match dissect pattern") {
-    val pattern = DissectPattern("%{ts} %{log_level},%{pid}[%{msg}]")
-    val log = "2020-08-01 [DEBUG],111[Well hello there]"
-    val dissect = new Dissect(pattern)
+    val pattern = DissectPattern("%{ts} %{+ts} %{log_level},%{pid}[%{msg}]")
+    val log = "2020-08-01 00:00:00 [DEBUG],111[Well hello there]"
+    val dissect = new Dissect(pattern, "yyyy-MM-dd hh:mm:ss")
     val Success(logEntry) = dissect.extractLogEvent(log)
     val expected = LogEntry(logEntry.date,
       Map(

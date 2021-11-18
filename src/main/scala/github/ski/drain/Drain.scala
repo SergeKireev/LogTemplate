@@ -1,20 +1,22 @@
 package github.ski.drain
 
-import github.ski.drain.domain.rule.{NoMatch, RuleEngine, UserRule, UserRuleNamedValueMatch, UserRuleValueMatch}
+import com.typesafe.scalalogging.LazyLogging
+import github.ski.drain.domain.rule.{IgnoreMatch, NoMatch, RuleEngine, UserRule, UserRuleNamedValueMatch, UserRuleValueMatch}
 import github.ski.drain.domain.template.{Template, VString, Variable}
 import github.ski.drain.state.{DrainConfig, DrainState, DrainStateController}
-import github.ski.drain.token.{BracketAwareTokenizer, EnclosedToken, FreeToken, NamedValueToken, SimpleTokenizer, StructuredLogToken, Token, Tokenizer, ValueToken, VariableToken}
+import github.ski.drain.token.{BracketAwareTokenizer, EnclosedToken, ExceptionAwareTokenizer, FreeToken, NamedValueToken, SimpleTokenizer, StructuredLogToken, Token, Tokenizer, ValueToken, VariableToken}
 import github.ski.drain.util.CommonRules
 
 import java.util.UUID
 
 case class DrainResult(template: String, variables: Map[Int, String])
 
-class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = DrainConfig()) {
+class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = DrainConfig()) extends LazyLogging {
 
   def tokenizer = config.tokenizeStrategy match {
     case "simple" => new SimpleTokenizer(" ")
     case "bracket-aware" => new BracketAwareTokenizer()
+    case "exception-aware" => new ExceptionAwareTokenizer()
   }
 
   val drainState = initialDrainState
@@ -42,6 +44,8 @@ class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = 
             ValueToken(value)
           case NoMatch(s) =>
             FreeToken(s)
+          case IgnoreMatch(s) =>
+            FreeToken(s)
         }
       case e => e :: Nil
     }.toList
@@ -63,7 +67,7 @@ class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = 
    * @return
    */
   def postProcess(template: Template, structuredLog: List[StructuredLogToken]): List[Variable] = {
-    structuredLog.zip(template.tokens).collect {
+    val variables = structuredLog.zip(template.tokens).collect {
       case (EnclosedToken(s), VariableToken(id)) =>
         Variable(id, s"enclosed${id.toString.substring(0, 8)}", VString, s)
       case (ValueToken(s), VariableToken(id)) => {
@@ -76,6 +80,8 @@ class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = 
         Variable(id, name, varType, value)
       }
     }
+    logger.info(s"Extracted variables ${variables}")
+    variables
   }
 
   /**

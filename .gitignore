@@ -1,4 +1,8 @@
+.git
 target
 .idea
 .bsp
 project
+docker/elasticsearch/*
+docker/clickhouse/*
+docker/grafana/*

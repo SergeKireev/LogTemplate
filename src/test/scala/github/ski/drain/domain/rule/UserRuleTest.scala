@@ -7,7 +7,7 @@ import org.scalatest.matchers.should.Matchers
 import java.util.UUID
 
 class UserRuleTest extends AnyFunSuite with Matchers {
-  test("test equality regex") {
+  test("equality regex") {
     val token = "xxx=yyy"
     val rule = CommonRules.EQUALITY_RULE
     val result = rule(token)
@@ -15,7 +15,31 @@ class UserRuleTest extends AnyFunSuite with Matchers {
     assert(result === expected)
   }
 
-  test("test uuid regex") {
+  test("equality regex 2") {
+    val token = "environment:zookeeper.version=3.4.9-1757313"
+    val rule = CommonRules.EQUALITY_RULE
+    val result = rule(token)
+    val expected = (UserRuleResult(UserRuleNamedValueMatch(name = "environment:zookeeper.version", separator = "=", value= "3.4.9-1757313") :: Nil))
+    assert(result === expected)
+  }
+
+  test("commit hash regex") {
+    val token = "77a89fcf8d7fa018"
+    val rule = CommonRules.COMMIT_HASH_RULE
+    val result = rule(token)
+    val expected = (UserRuleResult(UserRuleValueMatch(value = token) :: Nil))
+    assert(result === expected)
+  }
+
+  test("hexa regex") {
+    val token = "0x77a89fcf8d7fa018"
+    val rule = CommonRules.HEXA_RULE
+    val result = rule(token)
+    val expected = (UserRuleResult(UserRuleValueMatch(value = token) :: Nil))
+    assert(result === expected)
+  }
+
+  test("uuid regex") {
     val token = UUID.randomUUID().toString
     val rule = CommonRules.UUID_RULE
     val result = rule(token)

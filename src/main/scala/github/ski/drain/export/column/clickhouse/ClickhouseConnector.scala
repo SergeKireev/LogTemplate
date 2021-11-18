@@ -3,6 +3,7 @@ package github.ski.drain.`export`.column.clickhouse
 import akka.Done
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
+import cats.effect.{ContextShift, IO}
 import com.crobox.clickhouse.ClickhouseClient
 import com.crobox.clickhouse.internal.QuerySettings
 import com.crobox.clickhouse.stream.{ClickhouseSink, Insert}
@@ -15,8 +16,9 @@ import io.circe.{Encoder, JsonObject}
 import java.text.SimpleDateFormat
 import java.util.UUID
 import scala.collection.mutable
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import cats.implicits._
 
 object codec {
   private def mapVTypeToClickhouseCol(vType: VariableType) = vType match {
@@ -49,7 +51,9 @@ object codec {
 }
 
 import codec._
-class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[Future] {
+class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[IO] {
+
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
   lazy val client = {
     val croboxConfig = config.adaptToCrobox()
@@ -64,17 +68,25 @@ class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[Futu
       .fromFile("src/main/resources/export/clickhouse/schema.sql")
       .mkString
 
-  override def insert(variableRecord: VariableRecord): Future[Unit] = {
+  override def insert(variableRecords: List[VariableRecord]): IO[Unit] = {
     implicit val querySettings = new QuerySettings()
-    client.execute(s"INSERT INTO $DB_NAME.$TABLE_NAME FORMAT JSONEachRow", variableRecord.asJson.noSpaces).map(println)
+    IO.fromFuture(
+      IO.delay(
+        client.execute(s"INSERT INTO $DB_NAME.$TABLE_NAME FORMAT JSONEachRow", variableRecords.map(_.asJson.noSpaces).mkString("\n")).void
+      )
+    )
   }
 
-  override def getForTemplateId(id: UUID): Future[List[Any]] = ???
+  override def getForTemplateId(id: UUID): IO[List[Any]] = ???
 
-  override def init(): Future[Unit] = {
-    for {
-      _ <- client.execute(s"CREATE DATABASE IF NOT EXISTS $DB_NAME")
-      _ <- client.execute(schema)
-    } yield ()
+  override def init(): IO[Unit] = {
+    IO.fromFuture(
+      IO.delay(
+        for {
+          _ <- client.execute(s"CREATE DATABASE IF NOT EXISTS $DB_NAME")
+          _ <- client.execute(schema)
+        } yield ()
+      )
+    )
   }
 }

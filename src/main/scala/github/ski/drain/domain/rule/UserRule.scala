@@ -8,6 +8,7 @@ trait UserRuleSubMatch
 case class UserRuleNamedValueMatch(name: String, separator: String, value: String) extends UserRuleSubMatch
 case class UserRuleValueMatch(value: String) extends UserRuleSubMatch
 case class NoMatch(s: String) extends UserRuleSubMatch
+case class IgnoreMatch(s: String) extends UserRuleSubMatch
 
 case class UserRuleResult(subMatches: List[UserRuleSubMatch])
 
@@ -73,5 +74,14 @@ case class ValueRegexUserRule(regex: Regex, valueGroup: Int) extends UserRule {
       case _ => true
     }
     UserRuleResult(nonEmpty.toList)
+  }
+}
+
+case class IgnoreRegexUserRule(regex: Regex) extends UserRule {
+  def apply(s: String): UserRuleResult = {
+    UserRuleResult(ValueRegexUserRule(regex, 0)(s).subMatches.map {
+      case UserRuleValueMatch(s) => IgnoreMatch(s)
+      case n => n
+    })
   }
 }

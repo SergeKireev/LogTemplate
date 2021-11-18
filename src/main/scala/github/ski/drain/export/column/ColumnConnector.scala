@@ -8,6 +8,6 @@ case class VariableRecord(date: Date, template: Template, variables: List[Variab
 
 trait ColumnConnector[F[_]] {
   def init(): F[Unit]
-  def insert(variableRecord: VariableRecord): F[Unit]
+  def insert(variableRecords: List[VariableRecord]): F[Unit]
   def getForTemplateId(id: UUID): F[List[Any]]
 }

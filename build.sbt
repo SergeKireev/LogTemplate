@@ -30,3 +30,7 @@ libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.32",
 
 libraryDependencies += "com.crobox.clickhouse" %% "client" % "1.0.0"
 
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.3.0"
+libraryDependencies += "org.typelevel" %% "cats-effect" % "2.5.3"
+
+libraryDependencies += "co.fs2" %% "fs2-core" % "2.5.10"

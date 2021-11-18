@@ -10,4 +10,11 @@ class TokenizerTest extends AnyFunSuite with Matchers {
     val boundaries = tokenizer.separateBoundaries(example, '{', '}')
     boundaries should contain theSameElementsAs (List(FreeToken("My test has an object json in it "), EnclosedToken("""{"prop":{"hello":1}}""")))
   }
+
+  test("tokenization situation 1") {
+    val example = """Client environment:zookeeper.version=3.4.9-1757313, built"""
+    val tokenizer = new BracketAwareTokenizer()
+    val boundaries = tokenizer.tokenize(example)
+    boundaries should contain theSameElementsInOrderAs (Array(FreeToken("Client"), FreeToken("""environment:zookeeper.version=3.4.9-1757313"""), FreeToken(""), FreeToken("built")))
+  }
 }

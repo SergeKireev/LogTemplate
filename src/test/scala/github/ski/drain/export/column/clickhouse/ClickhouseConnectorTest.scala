@@ -28,7 +28,7 @@ class ClickhouseConnectorTest extends AnyFunSuite with ScalaFutures {
         |}
         |""".stripMargin)
     val clickhouseConnector = new ClickhouseConnector(new ClickhouseConfig(config))
-    val result = clickhouseConnector.init().futureValue
+    val result = clickhouseConnector.init().unsafeToFuture().futureValue
     val random = new Random(0L)
     val template1 = Template(id = uuidGen(random), tokens = List(FreeToken("User"), VariableToken(uuidGen(random)), FreeToken("has"), VariableToken(uuidGen(random))))
     val variables = List(
@@ -36,6 +36,6 @@ class ClickhouseConnectorTest extends AnyFunSuite with ScalaFutures {
         Variable(UUID.fromString("2ea4f77e-fed3-4489-9173-bd03b6b7e0bc"),"string2ea4f77e",VString,"connected"),
         Variable(UUID.fromString("2ea4f79e-fed3-4489-9173-bd03b6b7e0bc"),"string2ea4f79e",VString,"seen"))
     val variableRecord = VariableRecord(new Date(), template1, variables)
-    clickhouseConnector.insert(variableRecord).futureValue
+    clickhouseConnector.insert(variableRecord :: Nil).unsafeToFuture().futureValue
   }
 }
