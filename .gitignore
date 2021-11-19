@@ -4,6 +4,7 @@ target
 .bsp
 project/*
 !project/plugins.sbt
+!project/build.properties
 docker/elasticsearch/*
 docker/clickhouse/*
 docker/grafana/*

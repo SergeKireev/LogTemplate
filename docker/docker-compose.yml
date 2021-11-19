@@ -47,9 +47,10 @@ services:
     networks:
       - drain
   drain:
-    build: ./drain
+    container_name: drain
+    build: ./drain-image
     volumes:
-      - ./drain/resources:/drain-scala/src/main/resources
+      - ~/..:/drain-scala
     networks:
       - drain
 networks:

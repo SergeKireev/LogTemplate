@@ -10,7 +10,7 @@ import github.ski.drain.state.DrainConfig
 
 import scala.concurrent.ExecutionContext
 
-object Main extends App {
+object Main {
 
   implicit val cs = IO.contextShift(ExecutionContext.global)
 
