@@ -7,4 +7,3 @@ project/*
 !project/build.properties
 docker/elasticsearch/*
 docker/clickhouse/*
-docker/grafana/*

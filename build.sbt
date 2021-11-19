@@ -35,8 +35,4 @@ libraryDependencies += "org.typelevel" %% "cats-effect" % "2.5.3"
 
 libraryDependencies += "co.fs2" %% "fs2-core" % "2.5.10"
 
-mainClass in Compile := Some("github.ski.drain.Main")
-
-lazy val app = (project in file("src")).settings(
-  assembly / mainClass := Some("github.ski.drain.Main")
-)
+mainClass in (Compile, run) := Some("github.ski.drain.Main")

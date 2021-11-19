@@ -18,19 +18,24 @@ services:
     networks:
       - drain
   grafana:
-    image: grafana/grafana
+    build: ./grafana
     container_name: grafana
+    depends_on:
+      - "elasticsearch"
+      - "clickhouse"
     ports:
       - 3000:3000
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
     volumes:
-      - ./grafana:/etc/grafana/provisioning/datasources
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
     networks:
       - drain
-  server:
+  clickhouse:
     container_name: clickhouse
     image: yandex/clickhouse-server
     ports:
@@ -49,8 +54,11 @@ services:
   drain:
     container_name: drain
     build: ./drain-image
+    depends_on:
+      - "elasticsearch"
+      - "clickhouse"
     volumes:
-      - ~/..:/drain-scala
+      - ..:/drain-scala
     networks:
       - drain
 networks:
