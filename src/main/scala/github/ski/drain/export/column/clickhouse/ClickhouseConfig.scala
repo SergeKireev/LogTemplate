@@ -4,7 +4,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import github.ski.drain.util.ConfigOps.WithFallback
 
 class ClickhouseConfig(config: Config) {
-  def scoped: Config = config.getConfig("clickhouse")
+  def scoped: Config = config.getConfig("export.clickhouse")
 
   def getHost() = scoped.getOrElse[String]("host", "localhost")
 

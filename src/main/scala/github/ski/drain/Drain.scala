@@ -7,8 +7,6 @@ import github.ski.drain.state.{DrainConfig, DrainState, DrainStateController}
 import github.ski.drain.token.{BracketAwareTokenizer, EnclosedToken, ExceptionAwareTokenizer, FreeToken, NamedValueToken, SimpleTokenizer, StructuredLogToken, Token, Tokenizer, ValueToken, VariableToken}
 import github.ski.drain.util.CommonRules
 
-import java.util.UUID
-
 case class DrainResult(template: String, variables: Map[Int, String])
 
 class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = DrainConfig()) extends LazyLogging {
@@ -80,7 +78,6 @@ class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = 
         Variable(id, name, varType, value)
       }
     }
-    logger.info(s"Extracted variables ${variables}")
     variables
   }
 

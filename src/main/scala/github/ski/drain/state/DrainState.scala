@@ -2,7 +2,6 @@ package github.ski.drain.state
 
 import com.typesafe.config.{Config, ConfigFactory}
 import github.ski.drain.domain.template.Template
-import github.ski.drain.state.DrainState.DEFAULT_MAX_DEPTH
 import io.circe.{Decoder, parser}
 import io.circe.generic.semiauto.deriveDecoder
 import io.circe.syntax._
@@ -23,18 +22,19 @@ object DrainConfig {
 }
 
 case class DrainConfig(config: Config) {
+  val DEFAULT_MAX_DEPTH = 1
+  val DEFAULT_SIMILARITY_THRESHOLD = 0.5f
+
   def scoped = config.getConfig("drain")
   def maxDepth: Int = scoped.getOrElse("max-depth", DEFAULT_MAX_DEPTH)
-  def similarityThreshold: Float = scoped.getOrElse("similarity-threshold", 0.5f)
+  def similarityThreshold: Float = scoped.getOrElse("similarity-threshold", DEFAULT_SIMILARITY_THRESHOLD)
   def tokenizeStrategy: String = scoped.getOrElse("tokenizer", "bracket-aware")
+  def exportBatchSize: Int = scoped.getOrElse("export.batch-size", 1000)
 }
 
 case class DrainState(lengthMap: mutable.Map[Int, PrefixTree])
 
 object DrainState {
-  val DEFAULT_MAX_DEPTH = 1
-  val DEFAULT_SIMILARITY_THRESHOLD = 0.5
-
   def apply(): DrainState = {
     DrainState(mutable.Map.empty)
   }

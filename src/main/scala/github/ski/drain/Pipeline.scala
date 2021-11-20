@@ -1,6 +1,6 @@
 package github.ski.drain
 
-import cats.effect.{Bracket, ContextShift, Sync}
+import cats.effect.{ContextShift, Sync}
 import com.typesafe.scalalogging.LazyLogging
 import github.ski.drain.`export`.column.{ColumnConnector, VariableRecord}
 import github.ski.drain.`export`.index.IndexConnector
@@ -8,12 +8,11 @@ import github.ski.drain.`import`.AbstractReader
 import github.ski.drain.state.{DrainConfig, DrainState, DrainStateController}
 import fs2.Stream
 
-import scala.concurrent.duration.Duration
 import cats.implicits._
 import github.ski.drain.domain.log.LogEntry
 
-class Pipeline[F[_]](reader: AbstractReader[F],
-               drainConfig: DrainConfig,
+class Pipeline[F[_]](drainConfig: DrainConfig,
+               reader: AbstractReader[F],
                indexConnector: IndexConnector[F],
                columnConnector: ColumnConnector[F])
                     (implicit val S: Sync[F],
@@ -55,7 +54,6 @@ class Pipeline[F[_]](reader: AbstractReader[F],
     reader.open()
 
     for {
-      _ <- indexConnector.init()
       _ <- columnConnector.init()
       drain <- buildDrain()
       _ <- buildLogStream.map {
@@ -65,16 +63,18 @@ class Pipeline[F[_]](reader: AbstractReader[F],
           val variables = drain.postProcess(template, structuredTokens)
           val variableRecord = VariableRecord(logEntry.date, template, variables)
           variableRecord
-      }.chunkN(1000, true)
+      }.chunkN(drainConfig.exportBatchSize, true)
       .evalMap {
         variableRecords =>
           for {
-            _ <- columnConnector.insert(variableRecords.toList)
-            _ <- indexConnector.insertBulk(variableRecords.map(_.template).toList)
+            _ <- columnConnector.insertVariables(variableRecords.toList)
+            _ <- columnConnector.insertTemplates(variableRecords.map(_.template).toList.distinctBy(_.id))
           } yield {
             logger.info(s"Inserted ${variableRecords.size}")
           }
       }.compile.drain
-    } yield ()
+    } yield {
+      logger.info("Finished processing file")
+    }
   }
 }

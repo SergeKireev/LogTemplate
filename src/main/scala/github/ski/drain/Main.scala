@@ -7,12 +7,14 @@ import github.ski.drain.`export`.index.elasticsearch.{ElasticSearchConfig, Elast
 import github.ski.drain.`import`.common.{ReadConfig}
 import github.ski.drain.`import`.file.LogFileReader
 import github.ski.drain.state.DrainConfig
+import cats.effect.IO.timer
 
 import scala.concurrent.ExecutionContext
 
 object Main {
 
   implicit val cs = IO.contextShift(ExecutionContext.global)
+  implicit val t = timer(ExecutionContext.global)
 
   def main(args: Array[String]): Unit = {
     val config = ConfigFactory.parseResources("application.conf")
@@ -24,7 +26,7 @@ object Main {
     val indexConnector = new ElasticSearchConnector(elasticConfig)
     val drainConfig = new DrainConfig(config)
     val fileReader = new LogFileReader(readConfig)
-    val pipeline = new Pipeline(fileReader, drainConfig, indexConnector, clickhouseConnector)
+    val pipeline = new Pipeline(drainConfig, fileReader, indexConnector, clickhouseConnector)
     pipeline.work().unsafeRunSync()
   }
 }

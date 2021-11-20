@@ -9,12 +9,12 @@ import com.crobox.clickhouse.internal.QuerySettings
 import com.crobox.clickhouse.stream.{ClickhouseSink, Insert}
 import com.typesafe.config.ConfigFactory
 import github.ski.drain.`export`.column.{ColumnConnector, VariableRecord}
-import github.ski.drain.domain.template.{VDouble, VLong, VString, VariableType}
+import github.ski.drain.domain.template.{Template, VDouble, VLong, VString, VariableType}
 import io.circe.syntax.EncoderOps
 import io.circe.{Encoder, JsonObject}
 
 import java.text.SimpleDateFormat
-import java.util.UUID
+import java.util.{Date, UUID}
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,7 +27,17 @@ object codec {
     case VDouble => "double"
   }
 
-  lazy implicit val encoder: Encoder[VariableRecord] = Encoder.instance[VariableRecord] {
+  lazy implicit val templateEncoder: Encoder[Template] = Encoder.instance[Template] {
+    case template: Template =>
+      val format = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss")
+      val obj = JsonObject.empty
+        .add("id", template.id.toString.asJson)
+        .add("text", template.print().asJson)
+        .add("ts", format.format(new Date()).asJson)
+      obj.asJson
+  }
+
+  lazy implicit val variableEncoder: Encoder[VariableRecord] = Encoder.instance[VariableRecord] {
     case variableRecord: VariableRecord =>
       val format = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss")
       val dateTime = format.format(variableRecord.date)
@@ -61,18 +71,35 @@ class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[IO] 
   }
 
   val DB_NAME = "template"
-  val TABLE_NAME = "variables"
+  val VARIABLES_TABLE_NAME = "variables"
+  val TEMPLATES_TABLE_NAME = "templates"
 
-  private lazy val schema =
+  private lazy val variablesSchema =
     scala.io.Source
-      .fromFile("src/main/resources/export/clickhouse/schema.sql")
+      .fromFile("src/main/resources/export/clickhouse/variables.sql")
       .mkString
 
-  override def insert(variableRecords: List[VariableRecord]): IO[Unit] = {
+  private lazy val templatesSchema =
+    scala.io.Source
+      .fromFile("src/main/resources/export/clickhouse/templates.sql")
+      .mkString
+
+  override def insertVariables(variableRecords: List[VariableRecord]): IO[Unit] = {
     implicit val querySettings = new QuerySettings()
     IO.fromFuture(
       IO.delay(
-        client.execute(s"INSERT INTO $DB_NAME.$TABLE_NAME FORMAT JSONEachRow", variableRecords.map(_.asJson.noSpaces).mkString("\n")).void
+        client.execute(s"INSERT INTO $DB_NAME.$VARIABLES_TABLE_NAME FORMAT JSONEachRow",
+          variableRecords.map(_.asJson.noSpaces).mkString("\n")).void
+      )
+    )
+  }
+
+  override def insertTemplates(templates: List[Template]): IO[Unit] = {
+    implicit val querySettings = new QuerySettings()
+    IO.fromFuture(
+      IO.delay(
+        client.execute(s"INSERT INTO $DB_NAME.$TEMPLATES_TABLE_NAME FORMAT JSONEachRow",
+          templates.map(_.asJson.noSpaces).mkString("\n")).void
       )
     )
   }
@@ -84,7 +111,8 @@ class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[IO] 
       IO.delay(
         for {
           _ <- client.execute(s"CREATE DATABASE IF NOT EXISTS $DB_NAME")
-          _ <- client.execute(schema)
+          _ <- client.execute(templatesSchema)
+          _ <- client.execute(variablesSchema)
         } yield ()
       )
     )

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS template.variables
 (
     ts DateTime,
-    id String,
+    id UUID,
     long_name_1 Nullable(String),
     long_id_1 Nullable(UUID),
     long_val_1 Nullable(Int64),
