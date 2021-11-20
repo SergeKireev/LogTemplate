@@ -22,4 +22,14 @@ http://jiemingzhu.github.io/pub/pjhe_icws2017.pdf
 
 <h3> Configuration reference </h3>
 
-<h3> Future improvements <h3>
+<h3> Future improvements </h3>
+
+- templating algorithms
+
+- Ingestion sources
+  - csv, json file types
+  - http streaming
+  - kafka, rabbitmq
+
+- Exports targets
+  - graph oriented database
