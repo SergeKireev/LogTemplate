@@ -36,10 +36,7 @@ class Pipeline[F[_]](drainConfig: DrainConfig,
   }
 
   def buildDrain(): F[Drain] = {
-    loadState().map {
-      state =>
-        new Drain(state, drainConfig)
-    }
+    S.delay(new Drain(DrainState(), drainConfig))
   }
 
   def buildLogStream(): Stream[F, LogEntry] = {

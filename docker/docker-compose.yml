@@ -1,27 +1,8 @@
 services:
-  elasticsearch:
-    image: elasticsearch:7.14.2
-    container_name: es
-    environment:
-      discovery.type: single-node
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - ./elasticsearch:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 3
-    networks:
-      - drain
   grafana:
     build: ./grafana
     container_name: grafana
     depends_on:
-      - "elasticsearch"
       - "clickhouse"
     ports:
       - 3000:3000
@@ -43,7 +24,7 @@ services:
       - "9000:9000"
       - "9009:9009"
     volumes:
-      - ./clickhouse:/var/lib/clickhouse/data
+      - ./clickhouse:/var/lib/clickhouse
     ulimits:
       nproc: 65535
       nofile:
@@ -55,7 +36,6 @@ services:
     container_name: drain
     build: ./drain-image
     depends_on:
-      - "elasticsearch"
       - "clickhouse"
     volumes:
       - ..:/drain-scala

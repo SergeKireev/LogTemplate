@@ -1,0 +1,189 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "iteration": 1637408679231,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "clickhouse",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "com.netflix.config.ConcurrentCompositeConfiguration@23121d14, "
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "database": "template",
+          "dateColDataType": "toDate(ts)",
+          "dateLoading": false,
+          "dateTimeColDataType": "ts",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    $timeSeries as t,\n    count() as metric,\n    string_val_1\nFROM $table\n\nWHERE $timeFilter AND id=$template\n\nGROUP BY t, string_val_1, id\n\nORDER BY t\n",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(ts), 5) * 5) * 1000 as t,\n    count() as metric,\n    string_val_1\nFROM template.variables\n\nWHERE toDate(ts) >= toDate(1636433914) AND toDate(ts) <= toDate(1636442240) AND ts >= toDateTime(1636433914) AND ts <= toDateTime(1636442240) AND id='4f8a68c0-2c16-4a6d-a448-2eebd3a01563'\n\nGROUP BY t, string_val_1, id\n\nORDER BY t",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "variables",
+          "tableLoading": false
+        }
+      ],
+      "title": "Example panel",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 32,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "Client: AuthenticationService instantiated a LoadBalancer: <3d2d6ea9-ede9-4f69-baa6-995842460553>",
+          "value": "'4f8a68c0-2c16-4a6d-a448-2eebd3a01563'"
+        },
+        "datasource": "clickhouse",
+        "definition": "select concat('\\'',toString(id), '\\'') as __value, text as __text from template.templates order by __text",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "template",
+        "options": [],
+        "query": "select concat('\\'',toString(id), '\\'') as __value, text as __text from template.templates order by __text",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "2021-11-09T04:58:34.225Z",
+    "to": "2021-11-09T07:17:20.950Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Example log template dashboard",
+  "uid": "-CObP3cnk",
+  "version": 1
+}
