@@ -15,7 +15,7 @@ services:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
     networks:
-      - drain
+      - logtemplate
   clickhouse:
     container_name: clickhouse
     image: yandex/clickhouse-server
@@ -31,16 +31,16 @@ services:
         soft: 262144
         hard: 262144
     networks:
-      - drain
-  drain:
-    container_name: drain
-    build: ./drain-image
+      - logtemplate
+  logtemplate:
+    container_name: logtemplate
+    build: ./logtemplate-image
     depends_on:
       - "clickhouse"
     volumes:
-      - ..:/drain-scala
+      - ..:/logtemplate
     networks:
-      - drain
+      - logtemplate
 networks:
-  drain:
+  logtemplate:
     driver: bridge
