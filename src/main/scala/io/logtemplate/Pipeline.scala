@@ -24,12 +24,12 @@ class Pipeline[F[_]](drainConfig: DrainConfig,
   def loadState(): F[DrainState] = {
     indexConnector.fetchTemplates().map {
       templates =>
-        logger.info(s"Found ${templates.size} templates in elasticseach")
+        logger.debug(s"Found ${templates.size} templates in elasticseach")
         val state = DrainState()
         val stateController = new DrainStateController(state, drainConfig)
         templates.foreach {
           t =>
-            logger.info(s"Loading ${t.print()}")
+            logger.debug(s"Loading ${t.print()}")
             stateController.insertTemplate(t)
         }
         stateController.getState()

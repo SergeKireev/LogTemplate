@@ -45,7 +45,7 @@ class Dissect(pattern: DissectPattern, dateFormat: String) extends LazyLogging {
   }
 
   lazy val compilePattern: List[DissectSeparator] = {
-    logger.info(s"compiling pattern $pattern")
+    logger.debug(s"compiling pattern $pattern")
     (Start :: (compilePatternHelper(pattern.pattern, false, Nil) :+ End)).filter {
       case Separator(s) => s.nonEmpty
       case _ => true
@@ -83,15 +83,15 @@ class Dissect(pattern: DissectPattern, dateFormat: String) extends LazyLogging {
   }
 
   def extractLogEvent(s: String): Try[LogEntry] = {
-    logger.info(s"Applying compiled pattern ${compilePattern} to $s")
+    logger.debug(s"Applying compiled pattern ${compilePattern} to $s")
     Try {
       val valueMap = matchPatternHelper(s, compilePattern, Map.empty[String, String])
-      logger.info(s"Value map ${valueMap}")
+      logger.debug(s"Value map ${valueMap}")
       val ts = valueMap("ts")
       val msg = valueMap("msg")
       val simpleDateFormat = new SimpleDateFormat(dateFormat)
       val date = simpleDateFormat.parse(ts)
-      logger.info(s"Parsing date $date from $ts")
+      logger.debug(s"Parsing date $date from $ts")
       LogEntry(date, valueMap - "ts" - "msg", msg)
     }
   }
