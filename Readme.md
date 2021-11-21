@@ -1,7 +1,20 @@
+<h2> LogTemplate </h2>
+
 <h3> Description </h3>
 
-Implementation of the drain algorithm for log templating.
+LogTemplate is a tool for extracting common patterns from logs (called templates) using a clustering algorithm.
 
+The templating enables to: 
+- Automatically extract metrics and facets from logs
+- Automatic discovery of event types, which enables the study of sequences of events
+
+Currently is supported:
+- Offline raw file ingestion
+- Exporting to a column based database (clickhouse)
+- Visualization of metrics/facets using Grafana (timeseries charts or raw sql)
+
+<h4> Drain templating </h4>
+LogTemplate uses the drain algorithm for log templating.
 Academic description of the algorithm may be found here:
 
 http://jiemingzhu.github.io/pub/pjhe_icws2017.pdf
@@ -27,6 +40,9 @@ http://jiemingzhu.github.io/pub/pjhe_icws2017.pdf
 <h4> Clickhouse </h4>
 
 Data is exported into two tables:
+
+`variables` contains metrics and facets for the variables extracted from log templates
+
 ```sql
 # variables
 ts: DateTime
@@ -34,7 +50,7 @@ id: UUID
 [type]_[name, id, val]_[index:{0, 10}]
 ```
 
-Contains metrics and facets for the variables extracted from log templates
+`template` contains the text for the log template, so the log can be rehydrated with variable values if needed
 
 ```sql
 # template
@@ -45,7 +61,7 @@ text: String
 
 <h3> Future improvements </h3>
 
-- templating algorithms
+- Add templating algorithms
 
 - Ingestion sources
   - csv, json file types

@@ -1,4 +1,4 @@
-name := "drain-scala"
+name := "log-template"
 
 version := "0.1"
 
@@ -35,4 +35,4 @@ libraryDependencies += "org.typelevel" %% "cats-effect" % "2.5.3"
 
 libraryDependencies += "co.fs2" %% "fs2-core" % "2.5.10"
 
-mainClass in (Compile, run) := Some("github.ski.drain.Main")
+mainClass in (Compile, run) := Some("io.logtemplate.Main")
