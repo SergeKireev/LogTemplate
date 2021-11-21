@@ -1,4 +1,4 @@
-<h2> LogTemplate </h2>
+# LogTemplate [![Scala CI](https://github.com/SergeKireev/LogTemplates/actions/workflows/scala.yml/badge.svg)](https://github.com/SergeKireev/LogTemplates/actions/workflows/scala.yml)
 
 <h3> Description </h3>
 
