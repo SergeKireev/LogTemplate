@@ -1,10 +1,6 @@
 package io.logtemplate
 
 import com.typesafe.scalalogging.LazyLogging
-import io.logtemplate.domain.rule.RuleEngine
-import io.logtemplate.domain.template.Template
-import io.logtemplate.state.DrainStateController
-import io.logtemplate.token.ExceptionAwareTokenizer
 import io.logtemplate.domain.rule.{IgnoreMatch, NoMatch, RuleEngine, UserRule, UserRuleNamedValueMatch, UserRuleValueMatch}
 import io.logtemplate.domain.template.{Template, VString, Variable}
 import io.logtemplate.state.{DrainConfig, DrainState, DrainStateController}
@@ -18,7 +14,7 @@ class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = 
   def tokenizer = config.tokenizeStrategy match {
     case "simple" => new SimpleTokenizer(" ")
     case "bracket-aware" => new BracketAwareTokenizer()
-    case "exception-aware" => new ExceptionAwareTokenizer()
+    case "exception-aware" => new ExceptionAwareTokenizer(new BracketAwareTokenizer(), config.exceptionPattern)
   }
 
   val drainState = initialDrainState

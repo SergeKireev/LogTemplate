@@ -1,9 +1,7 @@
 package io.logtemplate
 
-import io.logtemplate.domain.template.Variable
 import io.logtemplate.domain.template.{VLong, VString, Variable}
 import io.logtemplate.state.DrainState
-import io.logtemplate.token.BracketAwareTokenizer
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 

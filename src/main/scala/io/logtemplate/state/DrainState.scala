@@ -29,6 +29,7 @@ case class DrainConfig(config: Config) {
   def maxDepth: Int = scoped.getOrElse("max-depth", DEFAULT_MAX_DEPTH)
   def similarityThreshold: Float = scoped.getOrElse("similarity-threshold", DEFAULT_SIMILARITY_THRESHOLD)
   def tokenizeStrategy: String = scoped.getOrElse("tokenizer", "bracket-aware")
+  def exceptionPattern: String = scoped.getOrElse("exception-pattern", "")
   def exportBatchSize: Int = scoped.getOrElse("export.batch-size", 1000)
 }
 
