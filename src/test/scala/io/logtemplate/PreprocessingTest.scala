@@ -8,14 +8,10 @@ import org.scalatest.matchers.should.Matchers
 class PreprocessingTest extends AnyFunSuite with Matchers {
   test("test preprocessing of a value entry") {
     val content = "User [123][456] has connected"
-    val tokenizer = new BracketAwareTokenizer()
     val drain = new Drain()
     val expected = List(FreeToken("User"),
-      FreeToken("["),
-      ValueToken("123"),
-      FreeToken("]["),
-      ValueToken("456"),
-      FreeToken("]"),
+      EnclosedToken("[123]"),
+      EnclosedToken("[456]"),
       FreeToken("has"),
       FreeToken("connected"))
 

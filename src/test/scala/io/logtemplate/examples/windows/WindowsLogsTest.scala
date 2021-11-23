@@ -9,7 +9,7 @@ import org.scalatest.matchers.should.Matchers
 
 class WindowsLogsTest extends AnyFunSuite with Matchers {
 
-  test("windows event log sample") {
+  ignore("windows event log sample") {
     val sample =
       ("""2016-09-28 04:30:30, Info                  CBS    Starting TrustedInstaller initialization.
         |2016-09-28 04:30:30, Info                  CBS    Loaded Servicing Stack v6.1.7601.23505 with Core: C:\Windows\winsxs\amd64_microsoft-windows-servicingstack_31bf3856ad364e35_6.1.7601.23505_none_681aa442f6fed7f0\cbscore.dll
