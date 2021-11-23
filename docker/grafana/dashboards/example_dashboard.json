@@ -22,7 +22,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1637408679231,
+  "iteration": 1637621822807,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -155,11 +155,11 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "Client: AuthenticationService instantiated a LoadBalancer: <3d2d6ea9-ede9-4f69-baa6-995842460553>",
-          "value": "'4f8a68c0-2c16-4a6d-a448-2eebd3a01563'"
+          "text": "<0322e8a1-a77b-4ccc-95b0-cddad133c4ba> PopulateComponentFamiliesKey - Begin",
+          "value": "'fe9d2b02-9ed8-4e18-9665-397078e4d28d'"
         },
         "datasource": "clickhouse",
-        "definition": "select concat('\\'',toString(id), '\\'') as __value, text as __text from template.templates order by __text",
+        "definition": "select distinct concat('\\'',toString(id), '\\'') as __value, text as __text from template.templates order by __text",
         "description": null,
         "error": null,
         "hide": 0,
@@ -168,7 +168,7 @@
         "multi": false,
         "name": "template",
         "options": [],
-        "query": "select concat('\\'',toString(id), '\\'') as __value, text as __text from template.templates order by __text",
+        "query": "select distinct concat('\\'',toString(id), '\\'') as __value, text as __text from template.templates order by __text",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,

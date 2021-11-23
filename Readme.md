@@ -70,3 +70,8 @@ text: String
 
 - Exports targets
   - graph oriented database
+
+- Showcase examples
+  - Example to compute elapsed times between to events as postprocessing
+  - Examples of ingested data
+  

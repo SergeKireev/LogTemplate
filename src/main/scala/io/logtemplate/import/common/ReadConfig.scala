@@ -8,7 +8,8 @@ case class DissectPattern(pattern: String)
 
 case class ReadConfig(config: Config) {
   private def scoped() = config.getConfig("read")
-  def fileName: String = scoped.getOrElse("file.path", "src/resources/file.log")
+  def filePath: String = scoped.getOrElse("file.path", "src/resources/file.log")
   def pattern: DissectPattern = DissectPattern(scoped.getOrElse("dissect.pattern", "%{ts} %{+ts} %{msg}"))
   def dateFormat: String = scoped.getOrElse("date-format", "yyyy-MM-dd hh:mm:ss")
+  def multiLineLimit: Int = scoped.getOrElse("multiline.limit", 1000)
 }

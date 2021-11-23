@@ -35,7 +35,15 @@ class BracketAwareTokenizer(separators: String = DEFAULT_SEPARATORS) extends Tok
   }
 
   override def tokenize(s: String): Array[StructuredLogToken] = {
-    val preTokens = separateBoundaries(s, '{', '}')
+    val boundaryChars = List(('{', '}'), ('[', ']'), ('(',')'))
+    val initial: List[StructuredLogToken] = FreeToken(s) :: Nil
+    val preTokens = boundaryChars.foldLeft(initial) {
+      case (acc, (open, close)) =>
+        acc.flatMap {
+          case FreeToken(free) => separateBoundaries(free, open, close)
+          case token => token :: Nil
+        }
+    }
     preTokens.flatMap {
       case FreeToken(s) => s.split(separators).map(FreeToken)
       case e => e :: Nil

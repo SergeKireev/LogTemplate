@@ -1,6 +1,8 @@
 package io.logtemplate
 
 import com.typesafe.scalalogging.LazyLogging
+import io.logtemplate.`export`.column.VariableRecord
+import io.logtemplate.domain.log.LogEntry
 import io.logtemplate.domain.rule.{IgnoreMatch, NoMatch, RuleEngine, UserRule, UserRuleNamedValueMatch, UserRuleValueMatch}
 import io.logtemplate.domain.template.{Template, VString, Variable}
 import io.logtemplate.state.{DrainConfig, DrainState, DrainStateController}
@@ -90,4 +92,18 @@ class Drain(initialDrainState: DrainState = DrainState(), config: DrainConfig = 
         s.replace(s"<${v.id}>", v.value)
     }
   }
+}
+
+class DrainWorker(drain: Drain) {
+
+    def preprocess(content: String): List[StructuredLogToken] = {
+      drain.preprocess(content)
+    }
+
+    def work(logEntry: LogEntry, tokens: List[StructuredLogToken]) = {
+      val (template, structuredTokens) = drain.process(tokens)
+      val variables = drain.postProcess(template, structuredTokens)
+      val variableRecord = VariableRecord(logEntry.date, template, variables)
+      variableRecord
+    }
 }

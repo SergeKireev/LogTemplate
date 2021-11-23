@@ -4,6 +4,7 @@ import io.logtemplate.domain.log.LogEntry
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
+import java.text.SimpleDateFormat
 import scala.util.Success
 
 class DissectTest extends AnyFunSuite with Matchers {
@@ -38,5 +39,12 @@ class DissectTest extends AnyFunSuite with Matchers {
       ),
     "Well hello there")
     assert(logEntry == expected)
+  }
+
+  test("date simple parse") {
+    val datePattern = "yyyy-MM-dd hh:mm:ss"
+    val dateStr = "2016-09-28 04:30:30"
+    val simpleDateFormat = new SimpleDateFormat(datePattern)
+    simpleDateFormat.parse(dateStr)
   }
 }

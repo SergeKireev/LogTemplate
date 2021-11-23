@@ -87,11 +87,16 @@ class Dissect(pattern: DissectPattern, dateFormat: String) extends LazyLogging {
     Try {
       val valueMap = matchPatternHelper(s, compilePattern, Map.empty[String, String])
       logger.debug(s"Value map ${valueMap}")
-      val ts = valueMap("ts")
+      val ts = valueMap("ts").filter {
+        c =>
+          // Some windows files have weird control characters
+          // which make it impossible to parse the date correctly
+          (c.isLetterOrDigit ||
+            c.isSurrogate || c.isSpaceChar || dateFormat.contains(c))
+      }
       val msg = valueMap("msg")
       val simpleDateFormat = new SimpleDateFormat(dateFormat)
-      val date = simpleDateFormat.parse(ts)
-      logger.debug(s"Parsing date $date from $ts")
+      val date = simpleDateFormat.parse(ts.take(dateFormat.size))
       LogEntry(date, valueMap - "ts" - "msg", msg)
     }
   }

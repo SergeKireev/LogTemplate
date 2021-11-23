@@ -1,6 +1,8 @@
 package io.logtemplate.token
 
-class ExceptionAwareTokenizer(delegate: Tokenizer, exceptionPattern: String) extends Tokenizer {
+import com.typesafe.scalalogging.LazyLogging
+
+class ExceptionAwareTokenizer(delegate: Tokenizer, exceptionPattern: String) extends Tokenizer with LazyLogging {
   override def tokenize(s: String): Array[StructuredLogToken] = {
     val startOfException = s.indexOf(exceptionPattern)
     if (startOfException>=0) {

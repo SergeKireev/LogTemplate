@@ -30,7 +30,8 @@ case class DrainConfig(config: Config) {
   def similarityThreshold: Float = scoped.getOrElse("similarity-threshold", DEFAULT_SIMILARITY_THRESHOLD)
   def tokenizeStrategy: String = scoped.getOrElse("tokenizer", "bracket-aware")
   def exceptionPattern: String = scoped.getOrElse("exception-pattern", "")
-  def exportBatchSize: Int = scoped.getOrElse("export.batch-size", 1000)
+  def exportBatchSize: Int = config.getOrElse("export.batch-size", 1000)
+  def parallelism: Int = scoped.getOrElse("parallelism", 3)
 }
 
 case class DrainState(lengthMap: mutable.Map[Int, PrefixTree])
