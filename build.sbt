@@ -24,6 +24,13 @@ libraryDependencies ++= Seq(
   "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
 )
 
+assemblyMergeStrategy in assembly := {
+  case PathList("module-info.class") => MergeStrategy.discard
+  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
 libraryDependencies ++= Seq("org.slf4j" % "slf4j-api" % "1.7.32",
   "org.slf4j" % "slf4j-simple" % "1.7.32")
 
