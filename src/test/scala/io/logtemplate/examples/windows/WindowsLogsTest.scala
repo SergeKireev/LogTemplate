@@ -2,7 +2,7 @@ package io.logtemplate.examples.windows
 
 import com.typesafe.config.ConfigFactory
 import io.logtemplate.Drain
-import io.logtemplate.`import`.common.{Ingestion, ReadConfig}
+import io.logtemplate.`import`.common.{Ingestion, FileImportConfig}
 import io.logtemplate.state.{DrainConfig, DrainState}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -50,7 +50,7 @@ class WindowsLogsTest extends AnyFunSuite with Matchers {
         |    exception-pattern = "\n"
         |}
         |""".stripMargin)
-    val readConfig = ReadConfig(config)
+    val readConfig = FileImportConfig(config)
     val ingestion = new Ingestion(readConfig)
 
     val drain = new Drain(DrainState(), DrainConfig(config))

@@ -1,22 +1,14 @@
 package io.logtemplate.`export`.column.clickhouse
 
-import akka.Done
-import akka.actor.ActorSystem
-import akka.stream.scaladsl.Source
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
 import com.crobox.clickhouse.ClickhouseClient
 import com.crobox.clickhouse.internal.QuerySettings
-import com.crobox.clickhouse.stream.{ClickhouseSink, Insert}
-import com.typesafe.config.ConfigFactory
-import io.logtemplate.`export`.column.ColumnConnector
-import io.logtemplate.domain.template.Template
 import io.circe.syntax.EncoderOps
 import io.circe.{Encoder, JsonObject}
 
 import java.text.SimpleDateFormat
 import java.util.{Date, UUID}
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import cats.implicits._
 import io.logtemplate.`export`.column.{ColumnConnector, VariableRecord}
@@ -65,8 +57,6 @@ object codec {
 import codec._
 class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[IO] {
 
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
-
   lazy val client = {
     val croboxConfig = config.adaptToCrobox()
     new ClickhouseClient(Some(croboxConfig))
@@ -86,7 +76,7 @@ class ClickhouseConnector(config: ClickhouseConfig) extends ColumnConnector[IO] 
       .fromFile("src/main/resources/export/clickhouse/templates.sql")
       .mkString
 
-  override def insertVariables(variableRecords: List[VariableRecord]): IO[Unit] = {
+  override def insertVariables(variableRecords: Seq[VariableRecord]): IO[Unit] = {
     implicit val querySettings = new QuerySettings()
     IO.fromFuture(
       IO.delay(

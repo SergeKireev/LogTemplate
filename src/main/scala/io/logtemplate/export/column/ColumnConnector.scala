@@ -9,7 +9,7 @@ case class VariableRecord(date: Date, template: Template, variables: List[Variab
 
 trait ColumnConnector[F[_]] {
   def init(): F[Unit]
-  def insertVariables(variableRecords: List[VariableRecord]): F[Unit]
+  def insertVariables(variableRecords: Seq[VariableRecord]): F[Unit]
   def insertTemplates(templates: List[Template]): F[Unit]
   def getForTemplateId(id: UUID): F[List[Any]]
 }

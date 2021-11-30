@@ -3,14 +3,14 @@ package io.logtemplate.`import`.file
 import cats.effect.IO
 import com.typesafe.scalalogging.LazyLogging
 import io.logtemplate.`import`.AbstractReader
-import io.logtemplate.`import`.common.{Ingestion, ReadConfig}
+import io.logtemplate.`import`.common.{Ingestion, FileImportConfig}
 import io.logtemplate.domain.log.LogEntry
 
 import java.io.{BufferedReader, FileReader}
 import scala.collection.mutable.ListBuffer
 import scala.util.Failure
 
-class LogFileReader(config: ReadConfig) extends AbstractReader[IO] with LazyLogging {
+class LogFileReader(config: FileImportConfig) extends AbstractReader[IO] with LazyLogging {
   private var br: BufferedReader = null
   private var currentLine: String = null
 

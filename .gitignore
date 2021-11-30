@@ -5,5 +5,5 @@ target
 project/*
 !project/plugins.sbt
 !project/build.properties
-docker/elasticsearch/*
-docker/clickhouse/*
+docker/*/elasticsearch/*
+docker/*/clickhouse/*

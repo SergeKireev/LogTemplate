@@ -1,6 +1,6 @@
 package io.logtemplate.`export`.index.elasticsearch
 
-import cats.effect.{ContextShift, IO, Timer}
+import cats.effect.IO
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.fields.{DateField, TextField}
@@ -21,7 +21,7 @@ import io.logtemplate.domain.template.Template
 import scala.language.postfixOps
 import scala.concurrent.duration.DurationInt
 
-class ElasticSearchConnector(config: ElasticSearchConfig)(implicit cs: ContextShift[IO], timer: Timer[IO]) extends IndexConnector[IO] {
+class ElasticSearchConnector(config: ElasticSearchConfig) extends IndexConnector[IO] {
 
   lazy val client: IO[ElasticClient] = {
     val props = ElasticProperties(s"http://${config.getHost()}:9200")

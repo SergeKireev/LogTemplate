@@ -1,7 +1,6 @@
 services:
   grafana:
-    build: ./grafana
-    container_name: grafana
+    build: ../common/grafana
     depends_on:
       - "clickhouse"
     ports:
@@ -17,7 +16,6 @@ services:
     networks:
       - logtemplate
   clickhouse:
-    container_name: clickhouse
     image: yandex/clickhouse-server
     ports:
       - "8123:8123"
@@ -34,11 +32,9 @@ services:
       - logtemplate
   logtemplate:
     container_name: logtemplate
-    build: ./logtemplate-image
+    build: ../common/logtemplate-image
     depends_on:
       - "clickhouse"
-    volumes:
-      - ..:/logtemplate
     networks:
       - logtemplate
 networks:

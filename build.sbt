@@ -27,6 +27,8 @@ libraryDependencies ++= Seq(
 assemblyMergeStrategy in assembly := {
   case PathList("module-info.class") => MergeStrategy.discard
   case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x if x.endsWith("/io.netty.versions.properties") => MergeStrategy.discard
+  case x if x.matches("google/protobuf/.*\\.proto") => MergeStrategy.discard
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
@@ -41,5 +43,14 @@ libraryDependencies += "org.typelevel" %% "cats-core" % "2.3.0"
 libraryDependencies += "org.typelevel" %% "cats-effect" % "2.5.3"
 
 libraryDependencies += "co.fs2" %% "fs2-core" % "2.5.10"
+
+libraryDependencies ++= Seq(
+  "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
+  "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
+)
+
+enablePlugins(Fs2Grpc)
+libraryDependencies += "io.grpc" % "grpc-netty-shaded" % scalapb.compiler.Version.grpcJavaVersion
+Compile / PB.protoSources := Seq(baseDirectory.value / "opentelemetry-proto")
 
 mainClass in (Compile, run) := Some("io.logtemplate.Main")

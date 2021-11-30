@@ -1,0 +1,23 @@
+receivers:
+  filelog:
+    include: [ /var/log/data/*.log ]
+
+processors:
+  batch:
+
+exporters:
+  otlp:
+    endpoint: logtemplate:9999
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+service:
+  extensions: [health_check,pprof,zpages]
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [batch]
+      exporters: [otlp]
