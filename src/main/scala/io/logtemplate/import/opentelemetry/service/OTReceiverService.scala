@@ -18,7 +18,7 @@ class LogReceivingService(queue: Queue[IO, Option[LogEntry]]) extends LogsServic
   override def `export`(request: ExportLogsServiceRequest, ctx: Metadata): IO[ExportLogsServiceResponse] = {
     val logs = request.resourceLogs
     val response = ExportLogsServiceResponse()
-    logger.info(s"RECEIVED LOGS FROM EXPORTER ${logs.mkString("\n")}")
+    logger.info(s"Received log from exporter ${logs.mkString("\n")}")
     for {
       _ <- logs.traverse {
         l =>
@@ -31,10 +31,6 @@ class LogReceivingService(queue: Queue[IO, Option[LogEntry]]) extends LogsServic
 }
 
 object OTReceiverService extends LazyLogging {
-  private def dequeue[F[_], A](queue: Queue[F, Option[A]]): Stream[F, A] = {
-    Stream.repeatEval(queue.take).unNoneTerminate
-  }
-
   def bindStream(ot: OpenTelemetryConfig, queue: Queue[IO, Option[LogEntry]]) = {
     logger.info("Binding open telemetry stream")
     val OtIngestionService: Resource[IO, ServerServiceDefinition] =
@@ -48,8 +44,6 @@ object OTReceiverService extends LazyLogging {
       .useForever
 
     OtIngestionService.use(run)
-    logger.info("Creating dequeue stream")
-    IO.delay(dequeue(queue))
   }
 
 }

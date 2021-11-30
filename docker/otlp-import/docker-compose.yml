@@ -13,6 +13,8 @@ services:
       - "55679:55679" # zpages extension
     depends_on:
       - logtemplate
+    networks:
+      - logtemplate
   grafana:
     build: ../common/grafana
     depends_on:
@@ -46,6 +48,8 @@ services:
       - logtemplate
   logtemplate:
     build: ../common/logtemplate-image
+    volumes:
+      - ./logtemplate/application.conf:/logtemplate/LogTemplate/src/main/resources/application.conf
     depends_on:
       - "clickhouse"
     networks:
