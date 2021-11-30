@@ -12,10 +12,12 @@ import io.logtemplate.`import`.opentelemetry.service.OTReceiverService
 import io.logtemplate.domain.log.LogEntry
 import io.logtemplate.state.DrainConfig
 
+import java.io.File
+
 object Main {
 
   def main(args: Array[String]): Unit = {
-    val config = ConfigFactory.parseResources("application.conf")
+    val config = ConfigFactory.parseFile(new File("./src/main/resources/application.conf"))
 
     //Importers
     val readConfig = ImportConfig(config)
