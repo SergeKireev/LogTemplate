@@ -4,7 +4,6 @@ import cats.implicits._
 import cats.effect.std.Queue
 import cats.effect.{IO, Resource}
 import com.typesafe.scalalogging.LazyLogging
-import fs2.Stream
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
 import fs2.grpc.syntax.all._
 import io.grpc.{Metadata, ServerServiceDefinition}
@@ -16,14 +15,14 @@ import java.util.Date
 
 class LogReceivingService(queue: Queue[IO, Option[LogEntry]]) extends LogsServiceFs2Grpc[IO, Metadata] with LazyLogging {
   override def `export`(request: ExportLogsServiceRequest, ctx: Metadata): IO[ExportLogsServiceResponse] = {
-    val logs = request.resourceLogs
+    val logs = request.resourceLogs.flatMap(_.instrumentationLibraryLogs).flatMap(_.logs)
     val response = ExportLogsServiceResponse()
-    logger.info(s"Received log from exporter ${logs.mkString("\n")}")
     for {
       _ <- logs.traverse {
-        l =>
+        log =>
+          logger.info(s"Received log from exporter ${log.getBody.getStringValue}")
           queue.offer(
-            Some(LogEntry(new Date, Map.empty, ""))
+            Some(LogEntry(new Date, Map.empty, log.getBody.getStringValue))
           )
       }
     } yield response

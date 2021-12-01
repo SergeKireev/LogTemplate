@@ -6,8 +6,11 @@ processors:
   batch:
 
 exporters:
-  otlp:
+  otlp/notls:
     endpoint: logtemplate:9999
+    tls:
+      insecure: true
+      insecure_skip_verify: true
 
 extensions:
   health_check:
@@ -20,4 +23,4 @@ service:
     logs:
       receivers: [filelog]
       processors: [batch]
-      exporters: [otlp]
+      exporters: [otlp/notls]
