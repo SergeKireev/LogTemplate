@@ -27,8 +27,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=grafana
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
     volumes:
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ../common/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ../common/grafana/dashboards:/etc/grafana/provisioning/dashboards
     networks:
       - logtemplate
   clickhouse:
